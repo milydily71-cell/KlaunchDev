@@ -6,7 +6,6 @@ on:
       - '.github/workflows/package-migration.yml'
 permissions:
   contents: write
-  workflows: write
 jobs:
   migrate:
     if: github.actor != 'github-actions[bot]'
@@ -23,8 +22,7 @@ jobs:
           mkdir -p app/src/main/java/com/kdroid app/src/test/java/com/kdroid
           git mv app/src/main/java/org/levimc/launcher app/src/main/java/com/kdroid/launcher
           git mv app/src/test/java/org/levimc/launcher app/src/test/java/com/kdroid/launcher
-          rm .github/workflows/package-migration.yml
-          grep -rlI --exclude-dir=.git 'org\.levimc\.launcher' . | while IFS= read -r file; do
+          grep -rlI --exclude-dir=.git --exclude='package-migration.yml' 'org\.levimc\.launcher' . | while IFS= read -r file; do
             sed -i 's/org\.levimc\.launcher/com.kdroid.launcher/g' "$file"
           done
           git add -A
