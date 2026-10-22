@@ -179,14 +179,34 @@ public class ApkInstaller {
                 String primaryAbi = Build.SUPPORTED_ABIS.length > 0 ? Build.SUPPORTED_ABIS[0] : "armeabi-v7a";
                 String systemAbiDir = MinecraftLauncher.abiToSystemLibDir(primaryAbi);
                 File importedAbiDir = new File(libTargetDir, systemAbiDir);
-                File minecraftRuntime = new File(importedAbiDir, "libminecraftpe.so");
-                if (!minecraftRuntime.isFile() || minecraftRuntime.length() == 0L) {
-                    postError("Minecraft APK imported, but libminecraftpe.so was not found for device ABI "
-                            + primaryAbi + ". Import the complete APK/APKS bundle matching this device, including its native-library splits.");
+                String versionName = extractVersionName(apkOrApksUri, baseDir, dirName);
+
+                // Validate the actual extracted runtime, not just the presence of an APK.
+                // Play Store/APKS installs may keep native libraries in ABI config splits,
+                // so a base-only APK must not be reported as a launch-ready instance.
+                List<String> requiredLibraries = new ArrayList<>();
+                requiredLibraries.add("libminecraftpe.so");
+                requiredLibraries.add("libc++_shared.so");
+                requiredLibraries.add("libfmod.so");
+                requiredLibraries.add("libMediaDecoders_Android.so");
+                if (isVersionAtLeast(versionName, "1.26.70.20")) {
+                    requiredLibraries.add("libMallocRedirect.so");
+                }
+
+                List<String> missingLibraries = new ArrayList<>();
+                for (String libraryName : requiredLibraries) {
+                    File library = new File(importedAbiDir, libraryName);
+                    if (!library.isFile() || library.length() == 0L) {
+                        missingLibraries.add(libraryName);
+                    }
+                }
+                if (!missingLibraries.isEmpty()) {
+                    postError("Minecraft runtime is incomplete for " + primaryAbi
+                            + ". Missing: " + String.join(", ", missingLibraries)
+                            + ". Import the complete APK/APKS bundle with its matching native ABI splits.");
                     return;
                 }
 
-                String versionName = extractVersionName(apkOrApksUri, baseDir, dirName);
                 postProgress(PROGRESS_METADATA_DONE);
                 writeProfileMetadata(metadataDir, dirName, versionName);
 
@@ -197,6 +217,23 @@ public class ApkInstaller {
                 postError("Install error: " + e.getMessage());
             }
         });
+    }
+
+    private boolean isVersionAtLeast(String currentVersion, String minimumVersion) {
+        try {
+            String[] current = currentVersion.replaceAll("[^0-9.]", "").split("\\.");
+            String[] minimum = minimumVersion.split("\\.");
+            int count = Math.max(current.length, minimum.length);
+            for (int i = 0; i < count; i++) {
+                int a = i < current.length ? Integer.parseInt(current[i].isEmpty() ? "0" : current[i]) : 0;
+                int b = i < minimum.length ? Integer.parseInt(minimum[i]) : 0;
+                if (a > b) return true;
+                if (a < b) return false;
+            }
+            return true;
+        } catch (Exception ignored) {
+            return false;
+        }
     }
 
     private String extractVersionName(Uri apkOrApksUri, File baseDir, String dirName) {
