@@ -150,6 +150,48 @@ android {
     ndkVersion = "28.2.13676358"
 }
 
+
+/*
+ * The preloader is built from the open-source C++ submodule. Its upstream
+ * JNI exports use org_levimc_launcher symbols, but the app-side Java classes
+ * were migrated to com.kdroid.launcher. Patch the JNI export names and
+ * overloaded-method descriptors before CMake compiles libpreloader.so.
+ *
+ * The closed-source prebuilt libgxcore.so and libinbuiltmods.so retain legacy
+ * JNI compatibility classes under org.levimc.launcher instead.
+ */
+def patchPreloaderJniPackage = tasks.register("patchPreloaderJniPackage") {
+    doLast {
+        def nativeSourceDir = file("src/main/cpp/preloader/src")
+        if (!nativeSourceDir.isDirectory()) {
+            throw new GradleException("preloader submodule source missing: ${nativeSourceDir}. Run git submodule update --init --recursive.")
+        }
+        int patchedFiles = 0
+        fileTree(nativeSourceDir).matching {
+            include "**/*.cpp", "**/*.cc", "**/*.c", "**/*.h", "**/*.hpp"
+        }.each { sourceFile ->
+            def before = sourceFile.getText("UTF-8")
+            def after = before
+                .replace("Java_org_levimc_launcher", "Java_com_kdroid_launcher")
+                .replace("Lorg_levimc_launcher", "Lcom_kdroid_launcher")
+            if (after != before) {
+                sourceFile.write(after, "UTF-8")
+                patchedFiles++
+            }
+        }
+        logger.lifecycle("KLauncher JNI migration: patched ${patchedFiles} preloader source file(s) for com.kdroid.launcher")
+    }
+}
+
+tasks.named("preBuild").configure {
+    dependsOn(patchPreloaderJniPackage)
+}
+tasks.configureEach {
+    if (name.startsWith("configureCMake") || name.startsWith("externalNativeBuild")) {
+        dependsOn(patchPreloaderJniPackage)
+    }
+}
+
 dependencies {
     implementation project(':minecraft')
     implementation project(':pojav_controls')
