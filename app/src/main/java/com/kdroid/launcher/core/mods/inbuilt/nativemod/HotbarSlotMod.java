@@ -95,17 +95,17 @@ public final class HotbarSlotMod {
         nativeClearSlot(slot);
     }
 
-    private static native boolean nativeInit();
-    private static native void nativeSetOverlayEnabled(boolean enabled);
-    private static native int nativeGameplayVisibilityState();
-    private static native boolean nativeItemIconsAvailable();
-    private static native void nativeCopyItemCounts(int[] destination);
-    private static native void nativeSetEnabled(boolean enabled);
-    private static native void nativeSetItemIconsEnabled(boolean enabled);
-    private static native void nativeSetSlotState(int slot, float x, float y, float width, float height,
+    private static boolean nativeInit() { return org.levimc.launcher.core.mods.inbuilt.nativemod.HotbarSlotMod.nativeInit(); }
+    private static void nativeSetOverlayEnabled(boolean enabled) { org.levimc.launcher.core.mods.inbuilt.nativemod.HotbarSlotMod.nativeSetOverlayEnabled(enabled); }
+    private static int nativeGameplayVisibilityState() { return org.levimc.launcher.core.mods.inbuilt.nativemod.HotbarSlotMod.nativeGameplayVisibilityState(); }
+    private static boolean nativeItemIconsAvailable() { return org.levimc.launcher.core.mods.inbuilt.nativemod.HotbarSlotMod.nativeItemIconsAvailable(); }
+    private static void nativeCopyItemCounts(int[] destination) { org.levimc.launcher.core.mods.inbuilt.nativemod.HotbarSlotMod.nativeCopyItemCounts(destination); }
+    private static void nativeSetEnabled(boolean enabled) { org.levimc.launcher.core.mods.inbuilt.nativemod.HotbarSlotMod.nativeSetEnabled(enabled); }
+    private static void nativeSetItemIconsEnabled(boolean enabled) { org.levimc.launcher.core.mods.inbuilt.nativemod.HotbarSlotMod.nativeSetItemIconsEnabled(enabled); }
+    private static void nativeSetSlotState(int slot, float x, float y, float width, float height,
                                                    float surfaceWidth, float surfaceHeight, float alpha,
-                                                   boolean visible, boolean pressed);
-    private static native boolean nativeHasItem(int slot);
-    private static native int nativeGetItemCount(int slot);
-    private static native void nativeClearSlot(int slot);
+                                                   boolean visible, boolean pressed) { org.levimc.launcher.core.mods.inbuilt.nativemod.HotbarSlotMod.nativeSetSlotState(slot, x, y, width, height, surfaceWidth, surfaceHeight, alpha, visible, pressed); }
+    private static boolean nativeHasItem(int slot) { return org.levimc.launcher.core.mods.inbuilt.nativemod.HotbarSlotMod.nativeHasItem(slot); }
+    private static int nativeGetItemCount(int slot) { return org.levimc.launcher.core.mods.inbuilt.nativemod.HotbarSlotMod.nativeGetItemCount(slot); }
+    private static void nativeClearSlot(int slot) { org.levimc.launcher.core.mods.inbuilt.nativemod.HotbarSlotMod.nativeClearSlot(slot); }
 }
