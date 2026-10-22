@@ -47,10 +47,24 @@ object NativeBridgeHelper {
             } catch (t: Throwable) {
                 firstError = t
                 android.util.Log.e("KLauncher-NativeBridge", "First gxcore load failed", t)
+
+                // Android caches a failed JNI_OnLoad result for the process. Calling
+                // System.load() on the same binary again cannot repair a registration
+                // mismatch and often hides the first, useful exception.
+                val message = t.message.orEmpty()
+                if (message.contains("JNI_OnLoad", ignoreCase = true) ||
+                    message.contains("JNI_ERR", ignoreCase = true)) {
+                    gxcoreLoadError =
+                        "libgxcore.so was found but its JNI_OnLoad failed. " +
+                        "The bundled native binary likely expects a different JNI class/method signature " +
+                        "or a missing native dependency. Rebuilding Java classes alone cannot fix this binary. " +
+                        "Original error: ${t.javaClass.simpleName}: ${t.message}"
+                    return@synchronized false
+                }
             }
 
-            // Some Android package/linker combinations resolve bundled native libraries
-            // more reliably by their explicit installed path.
+            // Use an explicit path only when loadLibrary failed before JNI_OnLoad
+            // (for example, nativeLibraryDir resolution). Do not retry a failed JNI registration.
             try {
                 val nativeDir = getAppContext().applicationInfo.nativeLibraryDir
                 val library = java.io.File(nativeDir, "libgxcore.so")
