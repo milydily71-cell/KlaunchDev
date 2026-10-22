@@ -87,7 +87,8 @@ android {
         }
         debug {
             debuggable false
-            minifyEnabled true
+            // Keep JNI bridge names intact while diagnosing the prebuilt gxcore runtime.
+            minifyEnabled false
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             firebaseCrashlytics {
