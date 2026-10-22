@@ -26,7 +26,7 @@ public final class AutoSprintMod {
         return initialized && nativeIsEnabled();
     }
 
-    private static native boolean nativeInit();
-    private static native void nativeSetEnabled(boolean enabled);
-    private static native boolean nativeIsEnabled();
+    private static boolean nativeInit() { return org.levimc.launcher.core.mods.inbuilt.nativemod.AutoSprintMod.nativeInit(); }
+    private static void nativeSetEnabled(boolean enabled) { org.levimc.launcher.core.mods.inbuilt.nativemod.AutoSprintMod.nativeSetEnabled(enabled); }
+    private static boolean nativeIsEnabled() { return org.levimc.launcher.core.mods.inbuilt.nativemod.AutoSprintMod.nativeIsEnabled(); }
 }
