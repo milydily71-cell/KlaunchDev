@@ -96,7 +96,7 @@ object NativeBridgeHelper {
         if (!ensureGxCoreLoaded()) {
             return false
         }
-        return org.levimc.launcher.util.NativeBridgeHelper.nativeScanImage(inputPath)
+        return org.levimc.launcher.util.NativeBridgeHelper.scanImage(inputPath)
     }
 
     @JvmStatic
@@ -104,7 +104,7 @@ object NativeBridgeHelper {
         if (!ensureGxCoreLoaded()) {
             return false
         }
-        return org.levimc.launcher.util.NativeBridgeHelper.nativeRewriteImage(inputPath, outputPath)
+        return org.levimc.launcher.util.NativeBridgeHelper.rewriteImage(inputPath, outputPath)
     }
 
     @JvmStatic
@@ -113,8 +113,7 @@ object NativeBridgeHelper {
             return false
         }
         return try {
-            org.levimc.launcher.util.NativeBridgeHelper.nativeBootstrapGxCore()
-            true
+            org.levimc.launcher.util.NativeBridgeHelper.bootstrapGxCore()
         } catch (_: Throwable) {
             false
         }
@@ -125,9 +124,7 @@ object NativeBridgeHelper {
         if (!ensureGxCoreLoaded()) {
             throw UnsatisfiedLinkError("Failed to load gxcore for the Minecraft runtime: ${getGxCoreLoadError()}")
         }
-        org.levimc.launcher.util.NativeBridgeHelper.nativeLoadMinecraftRuntime(libraryPath)?.let { error ->
-            throw UnsatisfiedLinkError(error)
-        }
+        org.levimc.launcher.util.NativeBridgeHelper.loadMinecraftRuntime(libraryPath)
     }
 
     @JvmStatic
