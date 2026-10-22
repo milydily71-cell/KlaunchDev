@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.Build;
 import android.os.Looper;
 import android.os.ParcelFileDescriptor;
 import android.provider.OpenableColumns;
@@ -171,6 +172,19 @@ public class ApkInstaller {
 
                 postProgress(PROGRESS_COPY_DONE);
                 extractNativeLibsWithProgress(apkFilesToExtract, libTargetDir);
+
+                // Do not report a successful import when the selected APK/bundle
+                // did not actually provide the native game runtime. Launch-time
+                // failures are otherwise confusing ("libminecraftpe.so not found").
+                String primaryAbi = Build.SUPPORTED_ABIS.length > 0 ? Build.SUPPORTED_ABIS[0] : "armeabi-v7a";
+                String systemAbiDir = MinecraftLauncher.abiToSystemLibDir(primaryAbi);
+                File importedAbiDir = new File(libTargetDir, systemAbiDir);
+                File minecraftRuntime = new File(importedAbiDir, "libminecraftpe.so");
+                if (!minecraftRuntime.isFile() || minecraftRuntime.length() == 0L) {
+                    postError("Minecraft APK imported, but libminecraftpe.so was not found for device ABI "
+                            + primaryAbi + ". Import the complete APK/APKS bundle matching this device, including its native-library splits.");
+                    return;
+                }
 
                 String versionName = extractVersionName(apkOrApksUri, baseDir, dirName);
                 postProgress(PROGRESS_METADATA_DONE);
