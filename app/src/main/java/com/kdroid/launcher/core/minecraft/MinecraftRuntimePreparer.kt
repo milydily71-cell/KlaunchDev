@@ -101,7 +101,7 @@ object MinecraftRuntimePreparer {
         // Load gxcore only after Minecraft's own native libraries and their
         // dependencies have been extracted and linked. Loading it earlier can
         // make JNI_OnLoad fail permanently for this process.
-        if (gameManager.shouldLoadMallocRedirect()) {
+        if (shouldUseGxCoreRuntimeHook(version) && gameManager.shouldLoadMallocRedirect()) {
             listener.onProgress(76, "Linking Minecraft runtime", "libminecraftpe.so")
             listener.onLog("Linking Minecraft and its native dependencies")
             val libraryPath = gameManager.resolveLibraryPath("minecraftpe")
@@ -255,7 +255,10 @@ object MinecraftRuntimePreparer {
             loadLibrary(gameManager, "HttpClient.Android", 52, true, listener, trace)
         }
 
-        val initializeBundledSdk = gameManager.shouldLoadMallocRedirect()
+        // The bundled gxcore binary has not been verified against the renamed com.kdroid JNI bridge
+        // or Minecraft 1.26.70.20+. Avoid initializing the native hook on these versions until
+        // a matching gxcore binary is built and tested; a JNI/native abort cannot be caught in Kotlin.
+        val initializeBundledSdk = shouldUseGxCoreRuntimeHook(version) && gameManager.shouldLoadMallocRedirect()
         if (initializeBundledSdk) {
             loadLibrary(gameManager, "PlayFabMultiplayer", 53, true, listener, trace)
             loadLibrary(gameManager, "maesdk", 54, true, listener, trace)
@@ -271,6 +274,10 @@ object MinecraftRuntimePreparer {
             if (shouldLoadHttpClient(version)) {
                 excludeLibs.add("HttpClient.Android")
                 excludeReasons["HttpClient.Android"] = "already loaded before the bundle"
+            }
+            if (!shouldUseGxCoreRuntimeHook(version)) {
+                excludeLibs.add("gxcore")
+                excludeReasons["gxcore"] = "gxcore runtime hook disabled for unverified Minecraft 1.26.70.20+ compatibility"
             }
             if (initializeBundledSdk) {
                 excludeLibs.add("PlayFabMultiplayer")
@@ -422,6 +429,15 @@ object MinecraftRuntimePreparer {
             ?: "default"
         return File(context.cacheDir, "native_mods/$versionDirName").also { it.mkdirs() }
     }
+
+    /**
+     * gxcore is a native JNI hook, not a harmless optional library. Until its JNI symbols and
+     * runtime assumptions are rebuilt/verified for KLauncher and current Minecraft, do not call
+     * it for 1.26.70.20+; this avoids the known unsafe hook path while retaining normal APK
+     * library extraction and loading. Older versions keep the existing behavior.
+     */
+    private fun shouldUseGxCoreRuntimeHook(version: GameVersion): Boolean =
+        !isVersionAtLeast(version.versionCode, "1.26.70.20")
 
     private fun shouldLoadMaesdk(version: GameVersion): Boolean {
         val versionCode = version.versionCode
