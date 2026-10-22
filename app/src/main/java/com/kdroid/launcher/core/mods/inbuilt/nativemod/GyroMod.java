@@ -9,15 +9,15 @@ public class GyroMod {
         return nativeInit();
     }
 
-    public static native void nativePreResolve();
-    public static native boolean nativeInit();
-    public static native void nativeSetEnabled(boolean enabled);
-    public static native void nativeUpdateDelta(float deltaYaw, float deltaPitch);
-    public static native void nativeSetSensitivityX(float sensitivity);
-    public static native void nativeSetSensitivityY(float sensitivity);
-    public static native void nativeSetInvertX(boolean invert);
-    public static native void nativeSetInvertY(boolean invert);
-    public static native void nativeSetDeadzone(float deadzone);
-    public static native boolean nativeIsInitialized();
-    public static native boolean nativeIsEnabled();
+    public static void nativePreResolve() { org.levimc.launcher.core.mods.inbuilt.nativemod.GyroMod.nativePreResolve(); }
+    public static boolean nativeInit() { return org.levimc.launcher.core.mods.inbuilt.nativemod.GyroMod.nativeInit(); }
+    public static void nativeSetEnabled(boolean enabled) { org.levimc.launcher.core.mods.inbuilt.nativemod.GyroMod.nativeSetEnabled(enabled); }
+    public static void nativeUpdateDelta(float deltaYaw, float deltaPitch) { org.levimc.launcher.core.mods.inbuilt.nativemod.GyroMod.nativeUpdateDelta(deltaYaw, deltaPitch); }
+    public static void nativeSetSensitivityX(float sensitivity) { org.levimc.launcher.core.mods.inbuilt.nativemod.GyroMod.nativeSetSensitivityX(sensitivity); }
+    public static void nativeSetSensitivityY(float sensitivity) { org.levimc.launcher.core.mods.inbuilt.nativemod.GyroMod.nativeSetSensitivityY(sensitivity); }
+    public static void nativeSetInvertX(boolean invert) { org.levimc.launcher.core.mods.inbuilt.nativemod.GyroMod.nativeSetInvertX(invert); }
+    public static void nativeSetInvertY(boolean invert) { org.levimc.launcher.core.mods.inbuilt.nativemod.GyroMod.nativeSetInvertY(invert); }
+    public static void nativeSetDeadzone(float deadzone) { org.levimc.launcher.core.mods.inbuilt.nativemod.GyroMod.nativeSetDeadzone(deadzone); }
+    public static boolean nativeIsInitialized() { return org.levimc.launcher.core.mods.inbuilt.nativemod.GyroMod.nativeIsInitialized(); }
+    public static boolean nativeIsEnabled() { return org.levimc.launcher.core.mods.inbuilt.nativemod.GyroMod.nativeIsEnabled(); }
 }
