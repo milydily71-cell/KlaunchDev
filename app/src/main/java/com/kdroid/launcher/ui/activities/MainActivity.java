@@ -846,13 +846,6 @@ import okhttp3.OkHttpClient;
             }
         }
 
-        if (!PlayStoreValidator.isMinecraftFromPlayStore(this)) {
-            trace.warning("Launch cancelled", "Minecraft is not verified as Play Store install");
-            binding.launchButton.setEnabled(true);
-            PlayStoreValidationDialog.showNotFromPlayStoreDialog(this);
-            return;
-        }
-
         trace.mark("Launch validation completed", version.directoryName + " " + version.versionCode);
         try {
             Intent launchIntent = createMinecraftLaunchIntent();
