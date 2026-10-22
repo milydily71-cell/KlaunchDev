@@ -1,10 +1,16 @@
 -keepattributes Signature,InnerClasses,EnclosingMethod,*Annotation*,SourceFile,LineNumberTable
 
--keep,includedescriptorclasses class org.levimc.** { *; }
+# Compatibility shim: prebuilt libgxcore.so still resolves this legacy JNI name.
+# Do not rename/remove it until gxcore is rebuilt with com.kdroid.launcher JNI bindings.
+-keep class org.levimc.launcher.util.NativeBridgeHelper { *; }
 
+# Preserve native declarations and their descriptors across package migration.
 -keepclasseswithmembers,includedescriptorclasses class * {
     native <methods>;
 }
+
+-keep,includedescriptorclasses class com.kdroid.launcher.util.NativeBridgeHelper { *; }
+-keep,includedescriptorclasses class com.kdroid.launcher.core.minecraft.MinecraftRuntimePreparer { *; }
 
 -keep,includedescriptorclasses class com.kdroid.launcher.core.minecraft.MinecraftActivity { *; }
 -keep,includedescriptorclasses class com.kdroid.launcher.util.NativeBridgeHelper { *; }
