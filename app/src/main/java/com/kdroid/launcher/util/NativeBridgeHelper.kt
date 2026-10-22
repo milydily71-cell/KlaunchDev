@@ -56,7 +56,8 @@ object NativeBridgeHelper {
             } catch (fallbackError: Throwable) {
                 val firstMessage = firstError?.let { "${it.javaClass.simpleName}: ${it.message}" }
                     ?: "unknown loadLibrary error"
-                gxcoreLoadError = "loadLibrary failed ($firstMessage); absolute-path load failed (${fallbackError.javaClass.simpleName}: ${fallbackError.message})"
+                val fallbackMessage = "${fallbackError.javaClass.simpleName}: ${fallbackError.message}"
+                gxcoreLoadError = "Initial loadLibrary failure: $firstMessage; absolute-path retry: $fallbackMessage. JNI_OnLoad failures are not repaired by retrying the same binary; verify legacy JNI class names, registered method names/signatures, and dependent libraries."
                 false
             }
         }
