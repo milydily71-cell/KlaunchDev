@@ -1,0 +1,37 @@
+name: One-time package migration
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/package-migration.yml'
+permissions:
+  contents: write
+jobs:
+  migrate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Rename source package and replace project references
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p app/src/main/java/com/kdroid app/src/test/java/com/kdroid
+          git mv app/src/main/java/org/levimc/launcher app/src/main/java/com/kdroid/launcher
+          git mv app/src/test/java/org/levimc/launcher app/src/test/java/com/kdroid/launcher
+          rm .github/workflows/package-migration.yml
+          grep -rlI --exclude-dir=.git 'org\.levimc\.launcher' . | while IFS= read -r file; do
+            sed -i 's/org\.levimc\.launcher/com.kdroid.launcher/g' "$file"
+          done
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No package migration changes found."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Rename Android package to com.kdroid.launcher"
+          git push origin HEAD:main
