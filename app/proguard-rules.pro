@@ -6,79 +6,79 @@
     native <methods>;
 }
 
--keep,includedescriptorclasses class org.levimc.launcher.core.minecraft.MinecraftActivity { *; }
--keep,includedescriptorclasses class org.levimc.launcher.util.NativeBridgeHelper { *; }
--keep,includedescriptorclasses class org.levimc.launcher.preloader.** { *; }
--keep,includedescriptorclasses class org.levimc.launcher.core.mods.Mod { *; }
--keep,includedescriptorclasses class org.levimc.launcher.core.mods.ModManager { *; }
--keep,includedescriptorclasses class org.levimc.launcher.core.mods.inbuilt.ExternalModBridge { *; }
--keep,includedescriptorclasses class org.levimc.launcher.core.mods.inbuilt.ExternalModBridge$* { *; }
--keep,includedescriptorclasses class org.levimc.launcher.core.mods.inbuilt.nativemod.** { *; }
--keep,includedescriptorclasses class org.levimc.launcher.core.content.nbt.NbtTag { *; }
--keep,includedescriptorclasses class org.levimc.launcher.core.content.nbt.NbtDocument { *; }
--keep,includedescriptorclasses class org.levimc.launcher.core.content.nbt.NativeNbt { *; }
--keep,includedescriptorclasses class org.levimc.launcher.core.content.leveldb.WorldDatabase { *; }
--keep class org.levimc.launcher.R$drawable { *; }
--keep class org.levimc.launcher.** implements android.os.Parcelable {
+-keep,includedescriptorclasses class com.kdroid.launcher.core.minecraft.MinecraftActivity { *; }
+-keep,includedescriptorclasses class com.kdroid.launcher.util.NativeBridgeHelper { *; }
+-keep,includedescriptorclasses class com.kdroid.launcher.preloader.** { *; }
+-keep,includedescriptorclasses class com.kdroid.launcher.core.mods.Mod { *; }
+-keep,includedescriptorclasses class com.kdroid.launcher.core.mods.ModManager { *; }
+-keep,includedescriptorclasses class com.kdroid.launcher.core.mods.inbuilt.ExternalModBridge { *; }
+-keep,includedescriptorclasses class com.kdroid.launcher.core.mods.inbuilt.ExternalModBridge$* { *; }
+-keep,includedescriptorclasses class com.kdroid.launcher.core.mods.inbuilt.nativemod.** { *; }
+-keep,includedescriptorclasses class com.kdroid.launcher.core.content.nbt.NbtTag { *; }
+-keep,includedescriptorclasses class com.kdroid.launcher.core.content.nbt.NbtDocument { *; }
+-keep,includedescriptorclasses class com.kdroid.launcher.core.content.nbt.NativeNbt { *; }
+-keep,includedescriptorclasses class com.kdroid.launcher.core.content.leveldb.WorldDatabase { *; }
+-keep class com.kdroid.launcher.R$drawable { *; }
+-keep class com.kdroid.launcher.** implements android.os.Parcelable {
     public static final android.os.Parcelable$Creator CREATOR;
 }
 
--keep class org.levimc.launcher.settings.FeatureSettings {
+-keep class com.kdroid.launcher.settings.FeatureSettings {
     !static !transient <fields>;
     <init>();
 }
 
--keep class org.levimc.launcher.core.auth.MsftAccountStore$MsftAccount {
+-keep class com.kdroid.launcher.core.auth.MsftAccountStore$MsftAccount {
     !static !transient <fields>;
     <init>();
 }
 
--keep class org.levimc.launcher.core.versions.VersionProfileMetadata {
+-keep class com.kdroid.launcher.core.versions.VersionProfileMetadata {
     !static !transient <fields>;
     <init>();
 }
 
--keep class org.levimc.launcher.util.InstanceBackupManager$BackupManifest {
+-keep class com.kdroid.launcher.util.InstanceBackupManager$BackupManifest {
     !static !transient <fields>;
     <init>();
 }
 
--keep class org.levimc.launcher.core.curseforge.models.** {
+-keep class com.kdroid.launcher.core.curseforge.models.** {
     !static !transient <fields>;
     <init>();
 }
 
--keep class org.levimc.launcher.core.modcatalog.ModCatalog {
+-keep class com.kdroid.launcher.core.modcatalog.ModCatalog {
     !static !transient <fields>;
     <init>();
 }
 
--keep class org.levimc.launcher.core.modcatalog.ModCatalog$* {
+-keep class com.kdroid.launcher.core.modcatalog.ModCatalog$* {
     !static !transient <fields>;
     <init>();
 }
 
--keep class org.levimc.launcher.core.news.NewsFeed {
+-keep class com.kdroid.launcher.core.news.NewsFeed {
     !static !transient <fields>;
     <init>();
 }
 
--keep class org.levimc.launcher.core.news.NewsItem {
+-keep class com.kdroid.launcher.core.news.NewsItem {
     !static !transient <fields>;
     <init>();
 }
 
--keep class org.levimc.launcher.core.news.ChangelogManager$Changelog {
+-keep class com.kdroid.launcher.core.news.ChangelogManager$Changelog {
     !static !transient <fields>;
     <init>();
 }
 
--keep class org.levimc.launcher.core.news.ChangelogManager$Section {
+-keep class com.kdroid.launcher.core.news.ChangelogManager$Section {
     !static !transient <fields>;
     <init>();
 }
 
--keep class org.levimc.launcher.core.news.ChangelogManager$Item {
+-keep class com.kdroid.launcher.core.news.ChangelogManager$Item {
     !static !transient <fields>;
     <init>();
 }

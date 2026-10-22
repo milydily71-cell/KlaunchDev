@@ -30,7 +30,7 @@ KLauncher is intended to handle user-provided Minecraft APKs, including builds o
 ## Project identity
 
 - App display name: **KLauncher**
-- Android namespace/application ID remains `org.levimc.launcher` to avoid breaking existing package references and integrations in this rebrand pass.
+- Android namespace/application ID remains `com.kdroid.launcher` to avoid breaking existing package references and integrations in this rebrand pass.
 - Upstream project: [LeviLaunchroid](https://github.com/LiteLDev/LeviLaunchroid)
 
 ## Attribution and licensing
