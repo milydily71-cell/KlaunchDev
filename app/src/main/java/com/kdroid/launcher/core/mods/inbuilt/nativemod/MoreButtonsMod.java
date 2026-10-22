@@ -23,6 +23,6 @@ public final class MoreButtonsMod {
     }
 
 
-    private static native boolean nativeInit();
-    private static native void nativeSendKey(int keyCode, boolean down);
+    private static boolean nativeInit() { return org.levimc.launcher.core.mods.inbuilt.nativemod.MoreButtonsMod.nativeInit(); }
+    private static void nativeSendKey(int keyCode, boolean down) { org.levimc.launcher.core.mods.inbuilt.nativemod.MoreButtonsMod.nativeSendKey(keyCode, down); }
 }
