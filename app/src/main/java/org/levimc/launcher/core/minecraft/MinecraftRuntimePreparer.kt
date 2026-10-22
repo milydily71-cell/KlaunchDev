@@ -12,6 +12,7 @@ import androidx.annotation.Keep
  */
 @Keep
 object MinecraftRuntimePreparer {
+    @JvmStatic
     @JvmName("nativeSetupRuntime")
     private external fun nativeSetupRuntime(modsPath: String)
 }
