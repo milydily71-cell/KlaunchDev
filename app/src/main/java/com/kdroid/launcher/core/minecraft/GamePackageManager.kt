@@ -359,11 +359,18 @@ class GamePackageManager private constructor(
             return true
         }
 
-        // Extraction must never discard an otherwise valid Minecraft library just
-        // because the optional gxcore image scanner cannot initialize. In the old
-        // flow, processRequired() returned false when gxcore/JNI_OnLoad failed and
-        // callers deleted libc++_shared.so (and other extracted libraries), causing
-        // a misleading "not found in minecraft_libs" error on the next launch.
+        // Minecraft 1.26.70.20+ uses a runtime layout where the legacy gxcore
+        // image-processing hook has not been verified. Do not initialize gxcore
+        // while extracting either an installed package or an imported APK: JNI_OnLoad
+        // can abort the process natively, which Kotlin exception handling cannot catch.
+        // Preserve the original ABI-matched library and let Android's linker load it.
+        if (shouldLoadMallocRedirect()) {
+            report("Native image processing skipped for ${file.name}: legacy gxcore hook disabled for this Minecraft version")
+            return file.isFile && file.length() > 0L
+        }
+
+        // Older versions retain the existing image-guard path. If the optional
+        // gxcore bootstrap fails, never delete a valid extracted game library.
         if (!NativeBridgeHelper.ensureGxCoreLoaded()) {
             report("Native image processing skipped for ${file.name}: gxcore unavailable; preserving original library")
             return file.isFile && file.length() > 0L
