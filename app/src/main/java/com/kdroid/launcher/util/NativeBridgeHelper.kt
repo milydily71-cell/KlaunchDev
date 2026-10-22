@@ -33,12 +33,20 @@ object NativeBridgeHelper {
 
             var firstError: Throwable? = null
             try {
+                // libgxcore.so was compiled against this legacy JNI class name.
+                // Resolve it before loading so JNI_OnLoad can register against the app class loader.
+                Class.forName(
+                    "org.levimc.launcher.util.NativeBridgeHelper",
+                    true,
+                    getAppContext().classLoader
+                )
                 System.loadLibrary("gxcore")
                 gxcoreLoaded = true
                 gxcoreLoadError = null
                 return@synchronized true
             } catch (t: Throwable) {
                 firstError = t
+                android.util.Log.e("KLauncher-NativeBridge", "First gxcore load failed", t)
             }
 
             // Some Android package/linker combinations resolve bundled native libraries
@@ -54,6 +62,7 @@ object NativeBridgeHelper {
                 gxcoreLoadError = null
                 true
             } catch (fallbackError: Throwable) {
+                android.util.Log.e("KLauncher-NativeBridge", "Absolute-path gxcore load failed", fallbackError)
                 val firstMessage = firstError?.let { "${it.javaClass.simpleName}: ${it.message}" }
                     ?: "unknown loadLibrary error"
                 val fallbackMessage = "${fallbackError.javaClass.simpleName}: ${fallbackError.message}"
