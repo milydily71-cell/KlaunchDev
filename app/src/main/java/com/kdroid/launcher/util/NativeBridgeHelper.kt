@@ -72,7 +72,7 @@ object NativeBridgeHelper {
         if (!ensureGxCoreLoaded()) {
             return false
         }
-        return nativeScanImage(inputPath)
+        return org.levimc.launcher.util.NativeBridgeHelper.nativeScanImage(inputPath)
     }
 
     @JvmStatic
@@ -80,7 +80,7 @@ object NativeBridgeHelper {
         if (!ensureGxCoreLoaded()) {
             return false
         }
-        return nativeRewriteImage(inputPath, outputPath)
+        return org.levimc.launcher.util.NativeBridgeHelper.nativeRewriteImage(inputPath, outputPath)
     }
 
     @JvmStatic
@@ -89,7 +89,7 @@ object NativeBridgeHelper {
             return false
         }
         return try {
-            nativeBootstrapGxCore()
+            org.levimc.launcher.util.NativeBridgeHelper.nativeBootstrapGxCore()
             true
         } catch (_: Throwable) {
             false
@@ -101,7 +101,7 @@ object NativeBridgeHelper {
         if (!ensureGxCoreLoaded()) {
             throw UnsatisfiedLinkError("Failed to load gxcore for the Minecraft runtime: ${getGxCoreLoadError()}")
         }
-        nativeLoadMinecraftRuntime(libraryPath)?.let { error ->
+        org.levimc.launcher.util.NativeBridgeHelper.nativeLoadMinecraftRuntime(libraryPath)?.let { error ->
             throw UnsatisfiedLinkError(error)
         }
     }
@@ -180,15 +180,4 @@ object NativeBridgeHelper {
         }
     }
 
-    @JvmStatic
-    private external fun nativeScanImage(inputPath: String): Boolean
-
-    @JvmStatic
-    private external fun nativeRewriteImage(inputPath: String, outputPath: String): Boolean
-
-    @JvmStatic
-    private external fun nativeBootstrapGxCore()
-
-    @JvmStatic
-    private external fun nativeLoadMinecraftRuntime(libraryPath: String): String?
 }
