@@ -9,11 +9,11 @@ public class ZoomMod {
         return nativeInit();
     }
 
-    public static native boolean nativeInit();
-    public static native void nativeOnKeyDown();
-    public static native void nativeOnKeyUp();
-    public static native void nativeOnScroll(float delta);
+    public static boolean nativeInit() { return org.levimc.launcher.core.mods.inbuilt.nativemod.ZoomMod.nativeInit(); }
+    public static void nativeOnKeyDown() { org.levimc.launcher.core.mods.inbuilt.nativemod.ZoomMod.nativeOnKeyDown(); }
+    public static void nativeOnKeyUp() { org.levimc.launcher.core.mods.inbuilt.nativemod.ZoomMod.nativeOnKeyUp(); }
+    public static void nativeOnScroll(float delta) { org.levimc.launcher.core.mods.inbuilt.nativemod.ZoomMod.nativeOnScroll(delta); }
 
-    public static native void nativeSetZoomLevel(long level);
-    public static native void nativeSetTransitionDuration(int duration);
+    public static void nativeSetZoomLevel(long level) { org.levimc.launcher.core.mods.inbuilt.nativemod.ZoomMod.nativeSetZoomLevel(level); }
+    public static void nativeSetTransitionDuration(int duration) { org.levimc.launcher.core.mods.inbuilt.nativemod.ZoomMod.nativeSetTransitionDuration(duration); }
 }
