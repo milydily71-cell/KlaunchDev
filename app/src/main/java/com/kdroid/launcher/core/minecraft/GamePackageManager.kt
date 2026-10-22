@@ -358,6 +358,17 @@ class GamePackageManager private constructor(
         if (!file.name.endsWith(".so")) {
             return true
         }
+
+        // Extraction must never discard an otherwise valid Minecraft library just
+        // because the optional gxcore image scanner cannot initialize. In the old
+        // flow, processRequired() returned false when gxcore/JNI_OnLoad failed and
+        // callers deleted libc++_shared.so (and other extracted libraries), causing
+        // a misleading "not found in minecraft_libs" error on the next launch.
+        if (!NativeBridgeHelper.ensureGxCoreLoaded()) {
+            report("Native image processing skipped for ${file.name}: gxcore unavailable; preserving original library")
+            return file.isFile && file.length() > 0L
+        }
+
         return if (force) {
             NativeImageGuard.processRequired(file)
         } else {
