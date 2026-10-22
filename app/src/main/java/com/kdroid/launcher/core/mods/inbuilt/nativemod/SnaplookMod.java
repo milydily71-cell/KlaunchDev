@@ -9,7 +9,7 @@ public class SnaplookMod {
         return nativeInit();
     }
 
-    public static native boolean nativeInit();
-    public static native void nativeOnKeyDown();
-    public static native void nativeOnKeyUp();
+    public static boolean nativeInit() { return org.levimc.launcher.core.mods.inbuilt.nativemod.SnaplookMod.nativeInit(); }
+    public static void nativeOnKeyDown() { org.levimc.launcher.core.mods.inbuilt.nativemod.SnaplookMod.nativeOnKeyDown(); }
+    public static void nativeOnKeyUp() { org.levimc.launcher.core.mods.inbuilt.nativemod.SnaplookMod.nativeOnKeyUp(); }
 }
