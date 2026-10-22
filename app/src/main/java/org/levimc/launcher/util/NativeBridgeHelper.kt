@@ -3,19 +3,51 @@ package org.levimc.launcher.util
 import android.content.Context
 import androidx.annotation.Keep
 import com.kdroid.launcher.core.minecraft.LauncherApplication
+import com.kdroid.launcher.R
 import com.kdroid.launcher.util.NativeBridgeHelper as CurrentBridge
 
 /**
- * Binary-compatibility bridge for the prebuilt libgxcore.so.
- *
- * The native library was built against the original Java package name. Keep this
- * class and its JNI entry points so JNI_OnLoad can find/register them after the
- * launcher application package migration to com.kdroid.launcher.
+ * JNI ABI compatibility facade for the original prebuilt libgxcore.so.
+ * Keep the legacy JVM class and wrapper/native method signatures stable.
  */
 @Keep
 object NativeBridgeHelper {
     @JvmStatic
     fun getAppContext(): Context = LauncherApplication.context
+
+    @JvmStatic
+    fun ensureGxCoreLoaded(): Boolean = CurrentBridge.ensureGxCoreLoaded()
+
+    @JvmStatic
+    fun scanImage(inputPath: String): Boolean =
+        CurrentBridge.ensureGxCoreLoaded() && nativeScanImage(inputPath)
+
+    @JvmStatic
+    fun rewriteImage(inputPath: String, outputPath: String): Boolean =
+        CurrentBridge.ensureGxCoreLoaded() && nativeRewriteImage(inputPath, outputPath)
+
+    @JvmStatic
+    fun bootstrapGxCore(): Boolean {
+        if (!CurrentBridge.ensureGxCoreLoaded()) return false
+        return try {
+            nativeBootstrapGxCore()
+            true
+        } catch (_: Throwable) {
+            false
+        }
+    }
+
+    @JvmStatic
+    fun loadMinecraftRuntime(libraryPath: String) {
+        if (!CurrentBridge.ensureGxCoreLoaded()) {
+            throw UnsatisfiedLinkError(
+                "Failed to load gxcore for the Minecraft runtime: ${CurrentBridge.getGxCoreLoadError()}"
+            )
+        }
+        nativeLoadMinecraftRuntime(libraryPath)?.let { error ->
+            throw UnsatisfiedLinkError(error)
+        }
+    }
 
     @JvmStatic
     fun getPrefs(name: String) = CurrentBridge.getPrefs(name)
@@ -44,14 +76,14 @@ object NativeBridgeHelper {
     fun showInvalidLicenseOverlay() = CurrentBridge.showInvalidLicenseOverlay()
 
     @JvmStatic
-    external fun nativeScanImage(inputPath: String): Boolean
+    private external fun nativeScanImage(inputPath: String): Boolean
 
     @JvmStatic
-    external fun nativeRewriteImage(inputPath: String, outputPath: String): Boolean
+    private external fun nativeRewriteImage(inputPath: String, outputPath: String): Boolean
 
     @JvmStatic
-    external fun nativeBootstrapGxCore()
+    private external fun nativeBootstrapGxCore()
 
     @JvmStatic
-    external fun nativeLoadMinecraftRuntime(libraryPath: String): String?
+    private external fun nativeLoadMinecraftRuntime(libraryPath: String): String?
 }
