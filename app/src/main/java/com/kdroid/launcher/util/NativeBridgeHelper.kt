@@ -22,24 +22,49 @@ object NativeBridgeHelper {
         return LauncherApplication.context
     }
 
+    @Volatile
+    private var gxcoreLoadError: String? = null
+
     @JvmStatic
     fun ensureGxCoreLoaded(): Boolean {
-        if (gxcoreLoaded) {
-            return true
-        }
+        if (gxcoreLoaded) return true
         return synchronized(this) {
-            if (gxcoreLoaded) {
-                true
-            } else {
-                try {
-                    System.loadLibrary("gxcore")
-                    gxcoreLoaded = true
-                    true
-                } catch (_: Throwable) {
-                    false
+            if (gxcoreLoaded) return@synchronized true
+
+            var firstError: Throwable? = null
+            try {
+                System.loadLibrary("gxcore")
+                gxcoreLoaded = true
+                gxcoreLoadError = null
+                return@synchronized true
+            } catch (t: Throwable) {
+                firstError = t
+            }
+
+            // Some Android package/linker combinations resolve bundled native libraries
+            // more reliably by their explicit installed path.
+            try {
+                val nativeDir = getAppContext().applicationInfo.nativeLibraryDir
+                val library = java.io.File(nativeDir, "libgxcore.so")
+                if (!library.isFile || library.length() == 0L) {
+                    throw UnsatisfiedLinkError("Bundled library missing: ${library.absolutePath}")
                 }
+                System.load(library.absolutePath)
+                gxcoreLoaded = true
+                gxcoreLoadError = null
+                true
+            } catch (fallbackError: Throwable) {
+                val firstMessage = firstError?.let { "${it.javaClass.simpleName}: ${it.message}" }
+                    ?: "unknown loadLibrary error"
+                gxcoreLoadError = "loadLibrary failed ($firstMessage); absolute-path load failed (${fallbackError.javaClass.simpleName}: ${fallbackError.message})"
+                false
             }
         }
+    }
+
+    @JvmStatic
+    fun getGxCoreLoadError(): String {
+        return gxcoreLoadError ?: "No detailed gxcore loader error available"
     }
 
     @JvmStatic
@@ -74,7 +99,7 @@ object NativeBridgeHelper {
     @JvmStatic
     fun loadMinecraftRuntime(libraryPath: String) {
         if (!ensureGxCoreLoaded()) {
-            throw UnsatisfiedLinkError("Failed to load gxcore for the Minecraft runtime")
+            throw UnsatisfiedLinkError("Failed to load gxcore for the Minecraft runtime: ${getGxCoreLoadError()}")
         }
         nativeLoadMinecraftRuntime(libraryPath)?.let { error ->
             throw UnsatisfiedLinkError(error)
