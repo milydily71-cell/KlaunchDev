@@ -119,7 +119,7 @@ struct Bridge {
     jclass node, list, map;
     jmethodID ctor, getType, getName, getValue, getListType, listCtor, listAdd, listSize, listGet, mapCtor, mapPut;
     explicit Bridge(JNIEnv* env) : e(env) {
-        node=e->FindClass("org/levimc/launcher/core/content/nbt/NbtTag");
+        node=e->FindClass("com/kdroid/launcher/core/content/nbt/NbtTag");
         list=e->FindClass("java/util/ArrayList"); map=e->FindClass("java/util/LinkedHashMap");
         ctor=e->GetMethodID(node,"<init>","(BLjava/lang/String;Ljava/lang/Object;B)V");
         getType=e->GetMethodID(node,"getType","()B"); getName=e->GetMethodID(node,"getName","()Ljava/lang/String;");
@@ -276,8 +276,8 @@ Java_org_levimc_launcher_core_content_nbt_NativeNbt_decode(JNIEnv* e,jclass,jbyt
         nbt::io::BytesDataInput stream(content.substr(0,used),false,format!=2);
         auto type=nbt::Tag::Type(stream.getByte()); auto name=stream.getString();
         auto tag=nbt::Tag::newTag(type); tag->load(stream); Bridge b(e); auto root=b.to(*tag,name);
-        auto cls=e->FindClass("org/levimc/launcher/core/content/nbt/NbtDocument");
-        auto result=e->NewObject(cls,e->GetMethodID(cls,"<init>","(Lorg/levimc/launcher/core/content/nbt/NbtTag;IIIZ)V"),root,version,jint(used+prefix),format,jboolean(compressed));
+        auto cls=e->FindClass("com/kdroid/launcher/core/content/nbt/NbtDocument");
+        auto result=e->NewObject(cls,e->GetMethodID(cls,"<init>","(Lcom/kdroid/launcher/core/content/nbt/NbtTag;IIIZ)V"),root,version,jint(used+prefix),format,jboolean(compressed));
         e->DeleteLocalRef(cls); e->DeleteLocalRef(root); check(e); return result;
     }catch(const JavaError&){}catch(const std::exception& ex){fail(e,ex);} return nullptr;
 }
