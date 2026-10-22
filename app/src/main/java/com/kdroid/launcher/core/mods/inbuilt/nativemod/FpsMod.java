@@ -9,7 +9,7 @@ public class FpsMod {
         return nativeInit();
     }
 
-    public static native boolean nativeInit();
-    public static native int nativeGetFps();
-    public static native boolean nativeIsInitialized();
+    public static boolean nativeInit() { return org.levimc.launcher.core.mods.inbuilt.nativemod.FpsMod.nativeInit(); }
+    public static int nativeGetFps() { return org.levimc.launcher.core.mods.inbuilt.nativemod.FpsMod.nativeGetFps(); }
+    public static boolean nativeIsInitialized() { return org.levimc.launcher.core.mods.inbuilt.nativemod.FpsMod.nativeIsInitialized(); }
 }
