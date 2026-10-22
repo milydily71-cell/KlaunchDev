@@ -83,21 +83,6 @@ object MinecraftRuntimePreparer {
         modManager.setCurrentVersion(version)
         trace.mark("ModManager state prepared")
 
-        if (gameManager.shouldLoadMallocRedirect()) {
-            listener.onProgress(38, "Loading native libraries", "libminecraftpe.so")
-            listener.onLog("Linking Minecraft and its native dependencies")
-            val libraryPath = gameManager.resolveLibraryPath("minecraftpe")
-                ?: throw RuntimeException("libminecraftpe.so not found in the Minecraft library cache")
-            trace.mark("Minecraft dependency graph loading started", libraryPath)
-            try {
-                NativeBridgeHelper.loadMinecraftRuntime(libraryPath)
-            } catch (error: UnsatisfiedLinkError) {
-                trace.error("Minecraft dependency graph load failed", error.message ?: "unknown error")
-                throw RuntimeException("Failed to load the Minecraft runtime: ${error.message}", error)
-            }
-            trace.mark("Minecraft dependency graph loaded", "MallocRedirect enabled")
-        }
-
         listener.onProgress(40, "Preparing game loader")
         listener.onLog("Loading game loader")
         trace.mark("Game loader load started")
@@ -112,6 +97,27 @@ object MinecraftRuntimePreparer {
 
         listener.onLog("Loading native libraries")
         loadMinecraftLibraries(gameManager, version, listener, trace)
+
+        // Load gxcore only after Minecraft's own native libraries and their
+        // dependencies have been extracted and linked. Loading it earlier can
+        // make JNI_OnLoad fail permanently for this process.
+        if (gameManager.shouldLoadMallocRedirect()) {
+            listener.onProgress(76, "Linking Minecraft runtime", "libminecraftpe.so")
+            listener.onLog("Linking Minecraft and its native dependencies")
+            val libraryPath = gameManager.resolveLibraryPath("minecraftpe")
+                ?: throw RuntimeException(
+                    "libminecraftpe.so not found in the Minecraft library cache. " +
+                        "Re-import the complete APK/APKS bundle for this device ABI."
+                )
+            trace.mark("Minecraft dependency graph loading started", libraryPath)
+            try {
+                NativeBridgeHelper.loadMinecraftRuntime(libraryPath)
+            } catch (error: UnsatisfiedLinkError) {
+                trace.error("Minecraft dependency graph load failed", error.message ?: "unknown error")
+                throw RuntimeException("Failed to load the Minecraft runtime: ${error.message}", error)
+            }
+            trace.mark("Minecraft dependency graph loaded", "MallocRedirect enabled")
+        }
 
         listener.onProgress(78, "Loading enabled mods")
         listener.onLog("Loading native mods")
