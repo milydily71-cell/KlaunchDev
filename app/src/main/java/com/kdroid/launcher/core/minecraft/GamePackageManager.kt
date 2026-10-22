@@ -277,10 +277,8 @@ class GamePackageManager private constructor(
             Log.w(TAG, "APK file does not exist: $apkPath")
             return
         }
-        if (!apkPath.contains("arm") && !apkPath.contains("x86") && !apkPath.contains("base.apk")) {
-            return
-        }
-
+        // Imported APKs may be stored as base.apk.levi or have arbitrary filenames.
+        // Inspect the ZIP contents instead of guessing ABI/content from the path.
         try {
             ZipFile(apkPath).use { zip ->
                 val abiPath = "lib/$abi"
